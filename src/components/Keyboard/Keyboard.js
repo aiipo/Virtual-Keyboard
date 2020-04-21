@@ -81,11 +81,60 @@ class Keyboard {
     this.setCursorPosition(pos);
   }
 
+  onEnter() {
+    const { value, selectionStart } = this.textarea;
+    const pre = value.slice(0, selectionStart);
+    this.textarea.value = pre + '\n' + value.slice(selectionStart);
+    this.setCursorPosition(pre.length + 1);
+  }
+
   onTab() {
     const { value, selectionStart } = this.textarea;
     const tab = '  ';
     this.textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionStart);
     this.setCursorPosition(selectionStart + tab.length);
+  }
+
+  onArrowLeft() {
+    this.setCursorPosition(this.textarea.selectionStart ? this.textarea.selectionStart - 1 : 0);
+  }
+
+  onArrowRight() {
+    this.setCursorPosition(this.textarea.selectionEnd + 1);
+  }
+
+  onArrowUp() {
+    const { value, selectionStart } = this.textarea;
+    const prevLine = value.slice(0, selectionStart).lastIndexOf('\n');
+    const endPrevLine = prevLine >= 0 ? prevLine : 0;
+    const prevPrevLine = value.slice(0, endPrevLine > 0 ? endPrevLine : 0).lastIndexOf('\n');
+    const startPrevLine = prevPrevLine > 0 ? prevPrevLine + 1 : 0;
+    const content = endPrevLine > 0 ? selectionStart - endPrevLine - 1 : selectionStart; // length of content on the line before cursor
+    const pos = startPrevLine + content < endPrevLine ? startPrevLine + content : endPrevLine;
+    this.setCursorPosition(pos);
+  }
+
+  onArrowDown() {
+    const { value, selectionStart } = this.textarea;
+    const prevLine = value.slice(0, selectionStart).lastIndexOf('\n');
+    const prevLineEnd = prevLine >= 0 ? prevLine : 0;
+    const beforeCursor = prevLineEnd > 0 ? selectionStart - prevLineEnd - 1 : selectionStart; // length of the line before cursor
+
+    const afterCursorLine = value.slice(selectionStart).indexOf('\n');
+    const afterCursor = afterCursorLine >= 0 ? afterCursorLine : -1; // length of the line after cursor
+
+    let pos = 0;
+    const posOnNextLine = selectionStart + afterCursor + beforeCursor + 1;
+    if (afterCursorLine >= 0) {
+      const next = value.slice(afterCursor + selectionStart + 1).indexOf('\n');
+      const nextLineEnd = next >= 0 // end of next line(if it doesn't exist - of current)
+        ? next + selectionStart + afterCursor + 1
+        : value.slice(selectionStart).length + selectionStart;
+      pos = posOnNextLine < nextLineEnd ? posOnNextLine : nextLineEnd;
+    } else {
+      pos = posOnNextLine < value.slice(selectionStart).length ? posOnNextLine : value.slice(selectionStart).length + selectionStart;
+    }
+    this.setCursorPosition(pos);
   }
 
   changeLanguage() {
@@ -127,6 +176,7 @@ class Keyboard {
           this.onBackspace();
           break;
         case 'Enter':
+          this.onEnter();
           break;
         case 'CapsLock':
           break;
@@ -140,12 +190,16 @@ class Keyboard {
         case 'ShiftRight':
           break;
         case 'ArrowLeft':
+          this.onArrowLeft();
           break;
         case 'ArrowRight':
+          this.onArrowRight();
           break;
         case 'ArrowUp':
+          this.onArrowUp();
           break;
         case 'ArrowDown':
+          this.onArrowDown();
           break;
         case 'AltLeft':
         case 'AltRight':
