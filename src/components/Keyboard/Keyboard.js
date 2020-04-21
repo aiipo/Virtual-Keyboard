@@ -62,8 +62,57 @@ class Keyboard {
     return el;
   }
 
-  addListeners() {
-    this.keyboard.addEventListener('click', this.handleClick.bind(this));
+  setCursorPosition(position) {
+    this.textarea.selectionStart = position;
+    this.textarea.selectionEnd = position;
+    this.textarea.focus();
+  }
+
+  onDelete() {
+    const { value, selectionStart } = this.textarea;
+    this.textarea.value = value.slice(0, selectionStart) + value.slice(selectionStart + 1);
+    this.setCursorPosition(selectionStart);
+  }
+
+  onBackspace() {
+    const { value, selectionStart } = this.textarea;
+    const pos = selectionStart > 0 ? selectionStart - 1 : 0;
+    this.textarea.value = value.slice(0, pos) + value.slice(selectionStart);
+    this.setCursorPosition(pos);
+  }
+
+  onTab() {
+    const { value, selectionStart } = this.textarea;
+    const tab = '  ';
+    this.textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionStart);
+    this.setCursorPosition(selectionStart + tab.length);
+  }
+
+  changeLanguage() {
+    const languages = Object.keys(keyboardLayout());
+    const currentIndex = languages.indexOf(this.lang);
+    const nextIndex = (currentIndex + 1) % languages.length;
+    this.lang = languages[nextIndex];
+    let index = 0;
+    this.keys = keyboardLayout()[this.lang].map(row => {
+      row.map(el => {
+        const key = new Key(el);
+        key.fillKey(this.keysDOM[index]);
+        index++;
+        return key;
+      });
+      return row;
+    }).flat();
+  }
+
+  printClicked(e) {
+    const { value, selectionStart } = this.textarea;
+    const key = this.keysDOM.find(key => key === e.target);
+    if (key) {
+      this.textarea.value = value.slice(0, selectionStart) + key.getAttribute('value') + value.slice(selectionStart);
+      this.textarea.focus();
+      this.setCursorPosition(selectionStart + 1);
+    }
   }
 
   handleClick(e) {
@@ -110,57 +159,8 @@ class Keyboard {
     }
   }
 
-  printClicked(e) {
-    const { value, selectionStart } = this.textarea;
-    const key = this.keysDOM.find(key => key === e.target);
-    if (key) {
-      this.textarea.value = value.slice(0, selectionStart) + key.getAttribute('value') + value.slice(selectionStart);
-      this.textarea.focus();
-      this.setCursorPosition(selectionStart + 1);
-    }
-  }
-
-  onDelete() {
-    const { value, selectionStart } = this.textarea;
-    this.textarea.value = value.slice(0, selectionStart) + value.slice(selectionStart + 1);
-    this.setCursorPosition(selectionStart);
-  }
-
-  onBackspace() {
-    const { value, selectionStart } = this.textarea;
-    const pos = selectionStart > 0 ? selectionStart - 1 : 0;
-    this.textarea.value = value.slice(0, pos) + value.slice(selectionStart);
-    this.setCursorPosition(pos);
-  }
-
-  onTab() {
-    const { value, selectionStart } = this.textarea;
-    const tab = '  ';
-    this.textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionStart);
-    this.setCursorPosition(selectionStart + tab.length);
-  }
-
-  setCursorPosition(position) {
-    this.textarea.selectionStart = position;
-    this.textarea.selectionEnd = position;
-    this.textarea.focus();
-  }
-
-  changeLanguage() {
-    const languages = Object.keys(keyboardLayout());
-    const currentIndex = languages.indexOf(this.lang);
-    const nextIndex = (currentIndex + 1) % languages.length;
-    this.lang = languages[nextIndex];
-    let index = 0;
-    this.keys = keyboardLayout()[this.lang].map(row => {
-      row.map(el => {
-        const key = new Key(el);
-        key.fillKey(this.keysDOM[index]);
-        index++;
-        return key;
-      });
-      return row;
-    }).flat();
+  addListeners() {
+    this.keyboard.addEventListener('click', this.handleClick.bind(this));
   }
 }
 
