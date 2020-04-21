@@ -30,8 +30,8 @@ class Keyboard {
       return row;
     }).flat();
     
-    this.changeLanguage();
     document.body.append(this.keyboard);
+    this.textarea.focus();
     this.addListeners();
   }
 
@@ -85,6 +85,7 @@ class Keyboard {
           this.changeLanguage();
           break;
         case 'Tab':
+          this.onTab();
           break;
         case 'ShiftLeft':
         case 'ShiftRight':
@@ -130,6 +131,13 @@ class Keyboard {
     const pos = selectionStart > 0 ? selectionStart - 1 : 0;
     this.textarea.value = value.slice(0, pos) + value.slice(selectionStart);
     this.setCursorPosition(pos);
+  }
+
+  onTab() {
+    const { value, selectionStart } = this.textarea;
+    const tab = '  ';
+    this.textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionStart);
+    this.setCursorPosition(selectionStart + tab.length);
   }
 
   setCursorPosition(position) {
