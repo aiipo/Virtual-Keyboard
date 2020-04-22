@@ -8,10 +8,11 @@ class Key {
     this.keyShift = keyShift;
   }
 
-  fillKey(key, isCapsLock, isShift) {
+  fillKey(key) {
     key.setAttribute('value', this.key);
-    if (isShift && isCapsLock) {
-      key.setAttribute('value', this.keyShift);
+    if (this.keyShift) {
+      key.setAttribute('data-shift', this.keyShift);
+      key.setAttribute('data-unshift', this.key);
     }
   }
 }

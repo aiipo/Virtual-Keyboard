@@ -10,25 +10,25 @@ class Keyboard {
     this.textarea = textarea || document.createElement('textarea');
     this.textarea.classList.add('keyboard__textarea');
     this.keyboard.append(this.textarea);
+    this.isCaps = false;
+    this.isShift = false;
     // get language
     this.lang = keyboardLayout[lang] ? lang :
                 keyboardLayout[localStorage.getItem('lang')] ? localStorage.getItem('lang')
                 : 'en';
     this.keysDOM = [];
     // render and fill keys, get them
-    this.keys = keyboardLayout()[this.lang].map(row => {
+    keyboardLayout()[this.lang].forEach(row => {
       const rowDOM = document.createElement('div');
-      row.map(el => {
+      row.forEach(el => {
         const key = new Key(el);
         const keyDOM = this.renderKey(key.code);
         this.keysDOM.push(keyDOM);
         key.fillKey(keyDOM);
         rowDOM.append(keyDOM);
-        return key;
       });
       this.keyboard.append(rowDOM);
-      return row;
-    }).flat();
+    });
     
     document.body.append(this.keyboard);
     this.textarea.focus();
@@ -62,11 +62,102 @@ class Keyboard {
     return el;
   }
 
+  /***********************************
+   * When key is pressed on virtual keyboard or physical.
+   * Result shows on virtual.
+  ************************************/
+
+  toLowerCaseKeys() {
+    this.keysDOM.forEach(key => {
+      const value = key.getAttribute('value');
+      if (value.length === 1) {
+        key.setAttribute('value', value.charAt(0).toLowerCase());
+      }
+    });
+  }
+
+  toUpperCaseKeys() {
+    this.keysDOM.forEach(key => {
+      const value = key.getAttribute('value');
+      if (value.length === 1) {
+        key.setAttribute('value', value.charAt(0).toUpperCase());
+      }
+    });
+  }
+
+  toShiftOnKeys() {
+    this.keysDOM.forEach(key => {
+      const value = key.getAttribute('data-shift');
+      if (value) {
+        key.setAttribute('value', value);
+      }
+    });
+  }
+
+  toShiftOffKeys() {
+    this.keysDOM.forEach(key => {
+      const value = key.getAttribute('data-unshift');
+      if (value) {
+        key.setAttribute('value', value);
+      }
+    });
+  }
+
+  highlightShift(state, event) {
+    const caps = event && this.keysDOM.find(key =>
+      key.getAttribute('data-code') === event.target.getAttribute('data-code')
+    );
+    if (caps && state) {
+      caps.classList.add('key--pressed-shift');
+    } else {
+      this.keysDOM.forEach(key => {
+        if (key.getAttribute('data-code') === 'ShiftRight'
+            || key.getAttribute('data-code') === 'ShiftLeft') {
+          key.classList.remove('key--pressed-shift');
+        }
+      })
+    }
+  }
+
+  highlightCapsLock() {
+    const caps = this.keysDOM.find(key => key.getAttribute('data-code') === 'CapsLock');
+    if (this.isCaps) {
+      caps.classList.add('key--pressed-caps');
+    } else {
+      caps.classList.remove('key--pressed-caps');
+    }
+  }
+
+  onCaps() {
+    this.highlightCapsLock();
+    if (this.isCaps && !this.isShift || !this.isCaps) {
+      this.toUpperCaseKeys();
+    } else {
+      this.toLowerCaseKeys();
+    }
+  }
+
+  onShift(event) {
+    if (this.isShift) {
+      this.toShiftOnKeys();
+      this.highlightShift(true, event);
+      if (this.isCaps) {
+        this.toLowerCaseKeys();
+      }
+    } else {
+      this.toShiftOffKeys();
+      this.highlightShift(false, event);
+      if(this.isCaps) {
+        this.toUpperCaseKeys();
+      }
+    }
+  }
+
   /******************************
     When key is pressed on virtual keyboard
    ******************************/
 
-   setCursorPosition(position) {
+  setCursorPosition(position) {
     this.textarea.selectionStart = position;
     this.textarea.selectionEnd = position;
     this.textarea.focus();
@@ -147,15 +238,13 @@ class Keyboard {
     const nextIndex = (currentIndex + 1) % languages.length;
     this.lang = languages[nextIndex];
     let index = 0;
-    this.keys = keyboardLayout()[this.lang].map(row => {
-      row.map(el => {
+    keyboardLayout()[this.lang].forEach(row => {
+      row.forEach(el => {
         const key = new Key(el);
         key.fillKey(this.keysDOM[index]);
         index++;
-        return key;
       });
-      return row;
-    }).flat();
+    });
   }
 
   printClicked(e) {
@@ -183,6 +272,8 @@ class Keyboard {
           this.onEnter();
           break;
         case 'CapsLock':
+          this.isCaps = !this.isCaps;
+          this.onCaps();
           break;
         case 'MetaLeft':
           this.changeLanguage();
@@ -192,6 +283,8 @@ class Keyboard {
           break;
         case 'ShiftLeft':
         case 'ShiftRight':
+          this.isShift = !this.isShift;
+          this.onShift(e);
           break;
         case 'ArrowLeft':
           this.onArrowLeft();
@@ -213,6 +306,10 @@ class Keyboard {
           break;
         default:
           this.printClicked(e);
+          if (this.isShift) {
+            this.isShift = false;
+            this.onShift();
+          }
       }
     }
   }
@@ -241,16 +338,39 @@ class Keyboard {
   highlightPressedKey({ code }) {
     const key = this.keysDOM.find(key => key.getAttribute('data-code') === code);
     if (key) {
-      key.classList.add('key-pressed');
+      key.classList.add('key--pressed');
       document.body.addEventListener('keyup', () => {
-        key.classList.remove('key-pressed');
+        key.classList.remove('key--pressed');
       });
     }
   }
 
+  handleKeydown(e) {
+    this.highlightPressedKey(e);
+    switch (e.code) {
+      case 'CapsLock':
+        this.isCaps = e.getModifierState('CapsLock');
+        this.onCaps();
+        break;
+      case 'ShiftLeft':
+      case 'ShiftRight':
+        this.isShift = true;
+        this.onShift();
+        break;
+      default:
+        break;
+    }
+    document.addEventListener('keyup', ({ code }) => {
+      if (code === 'ShiftLeft' || code  === 'ShiftRight') {
+        this.isShift = false;
+        this.onShift();
+      }
+    });
+  }
+
   addListeners() {
     this.keyboard.addEventListener('click', this.handleClick.bind(this));
-    document.body.addEventListener('keydown', this.highlightPressedKey.bind(this));
+    document.body.addEventListener('keydown', this.handleKeydown.bind(this));
     this.runOnKeys(
       this.changeLanguage.bind(this),
       ['ShiftLeft', 'ControlLeft'],

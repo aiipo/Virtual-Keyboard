@@ -61,6 +61,11 @@ body {
     max-width: 500px;
 }
 
-.key-pressed {
+.key--pressed {
     background-color: darkturquoise;
+}
+
+.key--pressed-caps,
+.key--pressed-shift {
+    background-color: darken(darkturquoise, 10);
 }
