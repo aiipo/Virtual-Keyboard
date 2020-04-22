@@ -25,11 +25,12 @@
     vertical-align: top;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    -webkit-transition: all .2s cubic-bezier(0, 1.43, .82, .74);
+    transition: all .2s cubic-bezier(0, 1.43, .82, .74);
 }
 
 .keyboard__key:hover {
     background-color: #00d4d4;
-    transition: all 0.2s ease-in-out;
 }
 
 .keyboard__key:active {

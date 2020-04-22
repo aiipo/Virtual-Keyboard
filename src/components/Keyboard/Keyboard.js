@@ -62,7 +62,11 @@ class Keyboard {
     return el;
   }
 
-  setCursorPosition(position) {
+  /******************************
+    When key is pressed on virtual keyboard
+   ******************************/
+
+   setCursorPosition(position) {
     this.textarea.selectionStart = position;
     this.textarea.selectionEnd = position;
     this.textarea.focus();
@@ -213,8 +217,45 @@ class Keyboard {
     }
   }
 
+  /*******************************
+    When key is pressed on device
+   ********************************/
+
+  runOnKeys(func, ...codes) {
+    const pressed = new Set();
+    document.addEventListener('keydown', e => {
+      pressed.add(e.code);
+      for (const code of codes) {
+        if (!pressed.has(code[0]) || !pressed.has(code[1])) {
+          continue;
+        }
+        pressed.clear();
+        func();
+      }
+    });
+    document.addEventListener('keyup', e => {
+      pressed.delete(e.code);
+    });
+  }
+
+  highlightPressedKey({ code }) {
+    const key = this.keysDOM.find(key => key.getAttribute('data-code') === code);
+    if (key) {
+      key.classList.add('key-pressed');
+      document.body.addEventListener('keyup', () => {
+        key.classList.remove('key-pressed');
+      });
+    }
+  }
+
   addListeners() {
     this.keyboard.addEventListener('click', this.handleClick.bind(this));
+    document.body.addEventListener('keydown', this.highlightPressedKey.bind(this));
+    this.runOnKeys(
+      this.changeLanguage.bind(this),
+      ['ShiftLeft', 'ControlLeft'],
+      ['ControlRight', 'ShiftRight']
+    );
   }
 }
 
