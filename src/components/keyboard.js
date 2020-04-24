@@ -13,12 +13,16 @@ class Keyboard {
     this.keyboard.append(this.textarea);
     this.isCaps = false;
     this.isShift = false;
-    // get language
-    this.lang = keyboardLayout[lang] ? lang :
-                keyboardLayout[localStorage.getItem('lang')] ? localStorage.getItem('lang')
-                : 'en';
+
+    if (keyboardLayout()[lang]) {
+      this.lang = lang;
+    } else if (keyboardLayout[localStorage.getItem('lang')]) {
+      this.lang = localStorage.getItem('lang');
+    } else {
+      this.lang = 'en';
+    }
+
     this.keysDOM = [];
-    // render and fill keys, get them
     keyboardLayout()[this.lang].forEach(row => {
       const rowDOM = document.createElement('div');
       row.forEach(el => {
@@ -30,7 +34,7 @@ class Keyboard {
       });
       this.keyboard.append(rowDOM);
     });
-    
+
     document.body.append(this.keyboard);
     this.textarea.focus();
     this.addListeners();
@@ -41,7 +45,7 @@ class Keyboard {
     el.setAttribute('disabled', '');
     el.setAttribute('data-code', code);
     el.classList.add('keyboard__key');
-    switch(code) {
+    switch (code) {
       case specialKey.Enter:
         el.classList.add('keyboard__key--enter');
         break;
@@ -59,14 +63,16 @@ class Keyboard {
       case specialKey.Space:
         el.classList.add('keyboard__key--ultra-wide');
         break;
+      default:
+        break;
     }
     return el;
   }
 
-  /***********************************
+  /*
    * When key is pressed on virtual keyboard or physical.
    * Result shows on virtual.
-  ************************************/
+  */
 
   toLowerCaseKeys() {
     this.keysDOM.forEach(key => {
@@ -105,9 +111,7 @@ class Keyboard {
   }
 
   highlightShift(state, event) {
-    const caps = event && this.keysDOM.find(key =>
-      key.getAttribute('data-code') === event.target.getAttribute('data-code')
-    );
+    const caps = event && this.keysDOM.find(key => key.getAttribute('data-code') === event.target.getAttribute('data-code'));
     if (caps && state) {
       caps.classList.add('key--pressed-shift');
     } else {
@@ -116,7 +120,7 @@ class Keyboard {
             || key.getAttribute('data-code') === specialKey.ShiftRight) {
           key.classList.remove('key--pressed-shift');
         }
-      })
+      });
     }
   }
 
@@ -148,15 +152,15 @@ class Keyboard {
     } else {
       this.toShiftOffKeys();
       this.highlightShift(false, event);
-      if(this.isCaps) {
+      if (this.isCaps) {
         this.toUpperCaseKeys();
       }
     }
   }
 
-  /******************************
+  /*
     When key is pressed on virtual keyboard
-   ******************************/
+  */
 
   setCursorPosition(position) {
     this.textarea.selectionStart = position;
@@ -180,7 +184,7 @@ class Keyboard {
   onEnter() {
     const { value, selectionStart } = this.textarea;
     const pre = value.slice(0, selectionStart);
-    this.textarea.value = pre + '\n' + value.slice(selectionStart);
+    this.textarea.value = `${pre}'\n'${value.slice(selectionStart)}`;
     this.setCursorPosition(pre.length + 1);
   }
 
@@ -205,7 +209,7 @@ class Keyboard {
     const endPrevLine = prevLine >= 0 ? prevLine : 0;
     const prevPrevLine = value.slice(0, endPrevLine > 0 ? endPrevLine : 0).lastIndexOf('\n');
     const startPrevLine = prevPrevLine > 0 ? prevPrevLine + 1 : 0;
-    const content = endPrevLine > 0 ? selectionStart - endPrevLine - 1 : selectionStart; // length of content on the line before cursor
+    const content = endPrevLine > 0 ? selectionStart - endPrevLine - 1 : selectionStart;
     const pos = startPrevLine + content < endPrevLine ? startPrevLine + content : endPrevLine;
     this.setCursorPosition(pos);
   }
@@ -214,21 +218,23 @@ class Keyboard {
     const { value, selectionStart } = this.textarea;
     const prevLine = value.slice(0, selectionStart).lastIndexOf('\n');
     const prevLineEnd = prevLine >= 0 ? prevLine : 0;
-    const beforeCursor = prevLineEnd > 0 ? selectionStart - prevLineEnd - 1 : selectionStart; // length of the line before cursor
+    const beforeCursor = prevLineEnd > 0 ? selectionStart - prevLineEnd - 1 : selectionStart;
 
     const afterCursorLine = value.slice(selectionStart).indexOf('\n');
-    const afterCursor = afterCursorLine >= 0 ? afterCursorLine : -1; // length of the line after cursor
+    const afterCursor = afterCursorLine >= 0 ? afterCursorLine : -1;
 
     let pos = 0;
     const posOnNextLine = selectionStart + afterCursor + beforeCursor + 1;
     if (afterCursorLine >= 0) {
       const next = value.slice(afterCursor + selectionStart + 1).indexOf('\n');
-      const nextLineEnd = next >= 0 // end of next line(if it doesn't exist - of current)
+      const nextLineEnd = next >= 0
         ? next + selectionStart + afterCursor + 1
         : value.slice(selectionStart).length + selectionStart;
       pos = posOnNextLine < nextLineEnd ? posOnNextLine : nextLineEnd;
     } else {
-      pos = posOnNextLine < value.slice(selectionStart).length ? posOnNextLine : value.slice(selectionStart).length + selectionStart;
+      pos = posOnNextLine < value.slice(selectionStart).length
+        ? posOnNextLine
+        : value.slice(selectionStart).length + selectionStart;
     }
     this.setCursorPosition(pos);
   }
@@ -243,7 +249,7 @@ class Keyboard {
       row.forEach(el => {
         const key = new Key(el);
         key.fillKey(this.keysDOM[index]);
-        index++;
+        index += 1;
       });
     });
   }
@@ -258,7 +264,7 @@ class Keyboard {
 
   printClicked(e) {
     const { value, selectionStart } = this.textarea;
-    const key = this.keysDOM.find(key => key === e.target);
+    const key = this.keysDOM.find(el => el === e.target);
     if (key) {
       this.textarea.value = value.slice(0, selectionStart) + key.getAttribute('value') + value.slice(selectionStart);
       this.textarea.focus();
@@ -325,21 +331,20 @@ class Keyboard {
     }
   }
 
-  /*******************************
+  /*
     When key is pressed on device
-   ********************************/
+  */
 
   runOnKeys(func, ...codes) {
     const pressed = new Set();
     document.addEventListener('keydown', e => {
       pressed.add(e.code);
-      for (const code of codes) {
-        if (!pressed.has(code[0]) || !pressed.has(code[1])) {
-          continue;
+      codes.forEach(code => {
+        if (pressed.has(code[0]) && pressed.has(code[1])) {
+          pressed.clear();
+          func();
         }
-        pressed.clear();
-        func();
-      }
+      });
     });
     document.addEventListener('keyup', e => {
       pressed.delete(e.code);
@@ -347,7 +352,7 @@ class Keyboard {
   }
 
   highlightPressedKey({ code }) {
-    const key = this.keysDOM.find(key => key.getAttribute('data-code') === code);
+    const key = this.keysDOM.find(el => el.getAttribute('data-code') === code);
     if (key) {
       key.classList.add('key--pressed');
       document.body.addEventListener('keyup', () => {
@@ -372,7 +377,7 @@ class Keyboard {
         break;
     }
     document.addEventListener('keyup', ({ code }) => {
-      if (code === specialKey.ShiftLeft || code  === specialKey.ShiftRight) {
+      if (code === specialKey.ShiftLeft || code === specialKey.ShiftRight) {
         this.isShift = false;
         this.onShift();
       }
@@ -385,7 +390,7 @@ class Keyboard {
     this.runOnKeys(
       this.changeLanguage.bind(this),
       [specialKey.ShiftLeft, specialKey.ControlLeft],
-      [specialKey.ShiftRight, specialKey.ControlRight]
+      [specialKey.ShiftRight, specialKey.ControlRight],
     );
   }
 }
