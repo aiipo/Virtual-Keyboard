@@ -1,6 +1,7 @@
 import './keyboard.scss';
 import keyboardLayout from './helpers/keyboardLayout';
 import Key from './helpers/key';
+import specialKey from './helpers/specialKeys';
 
 class Keyboard {
   constructor(textarea, lang) {
@@ -41,21 +42,21 @@ class Keyboard {
     el.setAttribute('data-code', code);
     el.classList.add('keyboard__key');
     switch(code) {
-      case 'Enter':
+      case specialKey.Enter:
         el.classList.add('keyboard__key--enter');
         break;
-      case 'CapsLock':
-      case 'Backspace':
-      case 'ShiftLeft':
+      case specialKey.CapsLock:
+      case specialKey.Backspace:
+      case specialKey.ShiftLeft:
         el.classList.add('keyboard__key--medium-wide');
         break;
-      case 'Tab':
-      case 'Delete':
-      case 'ControlLeft':
-      case 'ControlRight':
+      case specialKey.Tab:
+      case specialKey.Del:
+      case specialKey.ControlLeft:
+      case specialKey.ControlRight:
         el.classList.add('keyboard__key--wide');
         break;
-      case 'Space':
+      case specialKey.Space:
         el.classList.add('keyboard__key--ultra-wide');
         break;
     }
@@ -111,8 +112,8 @@ class Keyboard {
       caps.classList.add('key--pressed-shift');
     } else {
       this.keysDOM.forEach(key => {
-        if (key.getAttribute('data-code') === 'ShiftRight'
-            || key.getAttribute('data-code') === 'ShiftLeft') {
+        if (key.getAttribute('data-code') === specialKey.ShiftLeft
+            || key.getAttribute('data-code') === specialKey.ShiftRight) {
           key.classList.remove('key--pressed-shift');
         }
       })
@@ -120,7 +121,7 @@ class Keyboard {
   }
 
   highlightCapsLock() {
-    const caps = this.keysDOM.find(key => key.getAttribute('data-code') === 'CapsLock');
+    const caps = this.keysDOM.find(key => key.getAttribute('data-code') === specialKey.CapsLock);
     if (this.isCaps) {
       caps.classList.add('key--pressed-caps');
     } else {
@@ -270,48 +271,48 @@ class Keyboard {
     if (e.type === 'click') {
       const keyCode = e.target.attributes['data-code'].value;
       switch (keyCode) {
-        case 'Delete':
+        case specialKey.Del:
           this.onDelete();
           break;
-        case 'Backspace':
+        case specialKey.Backspace:
           this.onBackspace();
           break;
-        case 'Enter':
+        case specialKey.Enter:
           this.onEnter();
           break;
-        case 'CapsLock':
+        case specialKey.CapsLock:
           this.isCaps = !this.isCaps;
           this.onCaps();
           break;
-        case 'MetaLeft':
+        case specialKey.MetaLeft:
           this.changeLanguage();
           break;
-        case 'Tab':
+        case specialKey.Tab:
           this.onTab();
           break;
-        case 'ShiftLeft':
-        case 'ShiftRight':
+        case specialKey.ShiftLeft:
+        case specialKey.ShiftRight:
           this.isShift = !this.isShift;
           this.onShift(e);
           break;
-        case 'ArrowLeft':
+        case specialKey.ArrowLeft:
           this.onArrowLeft();
           break;
-        case 'ArrowRight':
+        case specialKey.ArrowRight:
           this.onArrowRight();
           break;
-        case 'ArrowUp':
+        case specialKey.ArrowUp:
           this.onArrowUp();
           break;
-        case 'ArrowDown':
+        case specialKey.ArrowDown:
           this.onArrowDown();
           break;
-        case 'AltLeft':
-        case 'AltRight':
+        case specialKey.AltLeft:
+        case specialKey.AltRight:
           this.onAlt();
           break;
-        case 'ControlLeft':
-        case 'ControlRight':
+        case specialKey.ControlLeft:
+        case specialKey.ControlRight:
           this.onCtrl();
           break;
         default:
@@ -358,12 +359,12 @@ class Keyboard {
   handleKeydown(e) {
     this.highlightPressedKey(e);
     switch (e.code) {
-      case 'CapsLock':
+      case specialKey.CapsLock:
         this.isCaps = e.getModifierState('CapsLock');
         this.onCaps();
         break;
-      case 'ShiftLeft':
-      case 'ShiftRight':
+      case specialKey.ShiftLeft:
+      case specialKey.ShiftRight:
         this.isShift = true;
         this.onShift();
         break;
@@ -371,7 +372,7 @@ class Keyboard {
         break;
     }
     document.addEventListener('keyup', ({ code }) => {
-      if (code === 'ShiftLeft' || code  === 'ShiftRight') {
+      if (code === specialKey.ShiftLeft || code  === specialKey.ShiftRight) {
         this.isShift = false;
         this.onShift();
       }
@@ -383,8 +384,8 @@ class Keyboard {
     document.body.addEventListener('keydown', this.handleKeydown.bind(this));
     this.runOnKeys(
       this.changeLanguage.bind(this),
-      ['ShiftLeft', 'ControlLeft'],
-      ['ControlRight', 'ShiftRight']
+      [specialKey.ShiftLeft, specialKey.ControlLeft],
+      [specialKey.ShiftRight, specialKey.ControlRight]
     );
   }
 }
