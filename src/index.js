@@ -1,3 +1,3 @@
-import Keyboard from './components/Keyboard/Keyboard';
+import Keyboard from './components/keyboard';
 
 new Keyboard();

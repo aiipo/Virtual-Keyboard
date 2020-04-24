@@ -1,6 +1,6 @@
-import './_keyboard.scss';
-import keyboardLayout from './keyboardLayout';
-import Key from './Key';
+import './keyboard.scss';
+import keyboardLayout from './helpers/keyboardLayout';
+import Key from './helpers/key';
 
 class Keyboard {
   constructor(textarea, lang) {
