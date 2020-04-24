@@ -247,6 +247,14 @@ class Keyboard {
     });
   }
 
+  onAlt() {
+    this.setCursorPosition(this.textarea.selectionStart);
+  }
+
+  onCtrl() {
+    this.setCursorPosition(this.textarea.selectionStart);
+  }
+
   printClicked(e) {
     const { value, selectionStart } = this.textarea;
     const key = this.keysDOM.find(key => key === e.target);
@@ -300,9 +308,11 @@ class Keyboard {
           break;
         case 'AltLeft':
         case 'AltRight':
+          this.onAlt();
           break;
         case 'ControlLeft':
         case 'ControlRight':
+          this.onCtrl();
           break;
         default:
           this.printClicked(e);
