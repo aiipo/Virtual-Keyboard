@@ -1,209 +1,209 @@
-const getLayout = () => {
+function getLayout() {
   return {
     en: [
       [
         {
-          code: 'Backquote', key: '`', keyShift: '~', keyAdditional: true
+          code: 'Backquote', key: '`', keyShift: '~',
         },
         {
-          code: 'Digit1', key: '1', keyShift: '!', keyAdditional: true, codeOfNumpad: 'Numpad1'
+          code: 'Digit1', key: '1', keyShift: '!',
         },
         {
-          code: 'Digit2', key: '2', keyShift: '@', keyAdditional: true, codeOfNumpad: 'Numpad2'
+          code: 'Digit2', key: '2', keyShift: '@',
         },
         {
-          code: 'Digit3', key: '3', keyShift: '#', keyAdditional: true, codeOfNumpad: 'Numpad3'
+          code: 'Digit3', key: '3', keyShift: '#',
         },
         {
-          code: 'Digit4', key: '4', keyShift: '$', keyAdditional: true, codeOfNumpad: 'Numpad4'
+          code: 'Digit4', key: '4', keyShift: '$',
         },
         {
-          code: 'Digit5', key: '5', keyShift: '%', keyAdditional: true, codeOfNumpad: 'Numpad5'
+          code: 'Digit5', key: '5', keyShift: '%',
         },
         {
-          code: 'Digit6', key: '6', keyShift: '^', keyAdditional: true, codeOfNumpad: 'Numpad6'
+          code: 'Digit6', key: '6', keyShift: '^',
         },
         {
-          code: 'Digit7', key: '7', keyShift: '&', keyAdditional: true, codeOfNumpad: 'Numpad7'
+          code: 'Digit7', key: '7', keyShift: '&',
         },
         {
-          code: 'Digit8', key: '8', keyShift: '*', keyAdditional: true, codeOfNumpad: 'Numpad8 NumpadMultiply'
+          code: 'Digit8', key: '8', keyShift: '*',
         },
         {
-          code: 'Digit9', key: '9', keyShift: '(', keyAdditional: true, codeOfNumpad: 'Numpad9'
+          code: 'Digit9', key: '9', keyShift: '(',
         },
         {
-          code: 'Digit0', key: '0', keyShift: ')', keyAdditional: true, codeOfNumpad: 'Numpad0'
+          code: 'Digit0', key: '0', keyShift: ')',
         },
         {
-          code: 'Minus', key: '-', keyShift: '_', keyAdditional: true, codeOfNumpad: 'NumpadSubtract'
+          code: 'Minus', key: '-', keyShift: '_',
         },
         {
-          code: 'Equal', key: '=', keyShift: '+', keyAdditional: true, codeOfNumpad: 'NumpadAdd'
+          code: 'Equal', key: '=', keyShift: '+',
         },
         {
-          code: 'Backspace', key: 'Backspace'
-        },
-      ],
-      [
-        {
-          code: 'Tab', key: 'Tab', 
-        },
-        {
-          code: 'KeyQ', key: 'q', keyShift: 'Q'
-        },
-        {
-          code: 'KeyW', key: 'w', keyShift: 'W'
-        },
-        {
-          code: 'KeyE', key: 'e', keyShift: 'E'
-        },
-        {
-          code: 'KeyR', key: 'r', keyShift: 'R'
-        },
-        {
-          code: 'KeyT', key: 't', keyShift: 'T'
-        },
-        {
-          code: 'KeyY', key: 'y', keyShift: 'Y'
-        },
-        {
-          code: 'KeyU', key: 'u', keyShift: 'U'
-        },
-        {
-          code: 'KeyI', key: 'i', keyShift: 'I'
-        },
-        {
-          code: 'KeyO', key: 'o', keyShift: 'O'
-        },
-        {
-          code: 'KeyP', key: 'p', keyShift: 'P'
-        },
-        {
-          code: 'BracketLeft', key: '[', keyShift: '{'
-        },
-        {
-          code: 'BracketRight', key: ']', keyShift: '}'
-        },
-        {
-          code: 'Backslash', key: '\\', keyShift: '/', keyAdditional: true
-        },
-        {
-          code: 'Delete', key: 'DEL', 
+          code: 'Backspace', key: 'Backspace',
         },
       ],
       [
         {
-          code: 'CapsLock', key: 'CapsLock'
+          code: 'Tab', key: 'Tab',
         },
         {
-          code: 'KeyA', key: 'a', keyShift: 'A'
+          code: 'KeyQ', key: 'q', keyShift: 'Q',
         },
         {
-          code: 'KeyS', key: 's', keyShift: 'S'
+          code: 'KeyW', key: 'w', keyShift: 'W',
         },
         {
-          code: 'KeyD', key: 'd', keyShift: 'D'
+          code: 'KeyE', key: 'e', keyShift: 'E',
         },
         {
-          code: 'KeyF', key: 'f', keyShift: 'F'
+          code: 'KeyR', key: 'r', keyShift: 'R',
         },
         {
-          code: 'KeyG', key: 'g', keyShift: 'G'
+          code: 'KeyT', key: 't', keyShift: 'T',
         },
         {
-          code: 'KeyH', key: 'h', keyShift: 'H'
+          code: 'KeyY', key: 'y', keyShift: 'Y',
         },
         {
-          code: 'KeyJ', key: 'j', keyShift: 'J'
+          code: 'KeyU', key: 'u', keyShift: 'U',
         },
         {
-          code: 'KeyK', key: 'k', keyShift: 'K'
+          code: 'KeyI', key: 'i', keyShift: 'I',
         },
         {
-          code: 'KeyL', key: 'l', keyShift: 'L'
+          code: 'KeyO', key: 'o', keyShift: 'O',
         },
         {
-          code: 'Semicolon', key: ';', keyShift: ':'
+          code: 'KeyP', key: 'p', keyShift: 'P',
         },
         {
-          code: 'Quote', key: '\'', keyShift: '"'
+          code: 'BracketLeft', key: '[', keyShift: '{',
         },
         {
-          code: 'Enter', key: 'Enter',  codeOfNumpad: 'NumpadEnter'
-        },
-      ],
-      [
-        {
-          code: 'ShiftLeft', key: 'Shift'
+          code: 'BracketRight', key: ']', keyShift: '}',
         },
         {
-          code: 'Backslash', key: '\\', keyShift: '|'
+          code: 'Backslash', key: '\\', keyShift: '/',
         },
         {
-          code: 'KeyZ', key: 'z', keyShift: 'Z'
-        },
-        {
-          code: 'KeyX', key: 'x', keyShift: 'X'
-        },
-        {
-          code: 'KeyC', key: 'c', keyShift: 'C'
-        },
-        {
-          code: 'KeyV', key: 'v', keyShift: 'V'
-        },
-        {
-          code: 'KeyB', key: 'b', keyShift: 'B'
-        },
-        {
-          code: 'KeyN', key: 'n', keyShift: 'N'
-        },
-        {
-          code: 'KeyM', key: 'm', keyShift: 'M'
-        },
-        {
-          code: 'Comma', key: ',', keyShift: '<'
-        },
-        {
-          code: 'Period', key: '.', keyShift: '>', codeOfNumpad: 'NumpadDecimal'
-        },
-        {
-          code: 'Slash', key: '/', keyShift: '?', codeOfNumpad: 'NumpadDivide'
-        },
-        {
-          code: 'ArrowUp', key: '▲'
-        },
-        {
-          code: 'ShiftRight', key: 'Shift'
+          code: 'Delete', key: 'DEL',
         },
       ],
       [
         {
-          code: 'ControlLeft', key: 'Ctrl', 
+          code: 'CapsLock', key: 'CapsLock',
         },
         {
-          code: 'MetaLeft', key: 'Win'
+          code: 'KeyA', key: 'a', keyShift: 'A',
         },
         {
-          code: 'AltLeft', key: 'Alt'
+          code: 'KeyS', key: 's', keyShift: 'S',
         },
         {
-          code: 'Space', key: ' '
+          code: 'KeyD', key: 'd', keyShift: 'D',
         },
         {
-          code: 'AltRight', key: 'Alt'
+          code: 'KeyF', key: 'f', keyShift: 'F',
         },
         {
-          code: 'ControlRight', key: 'Ctrl', 
+          code: 'KeyG', key: 'g', keyShift: 'G',
         },
         {
-          code: 'ArrowLeft', key: '◄'
+          code: 'KeyH', key: 'h', keyShift: 'H',
         },
         {
-          code: 'ArrowDown', key: '▼'
+          code: 'KeyJ', key: 'j', keyShift: 'J',
         },
         {
-          code: 'ArrowRight', key: '►'
+          code: 'KeyK', key: 'k', keyShift: 'K',
+        },
+        {
+          code: 'KeyL', key: 'l', keyShift: 'L',
+        },
+        {
+          code: 'Semicolon', key: ';', keyShift: ':',
+        },
+        {
+          code: 'Quote', key: '\'', keyShift: '"',
+        },
+        {
+          code: 'Enter', key: 'Enter',
+        },
+      ],
+      [
+        {
+          code: 'ShiftLeft', key: 'Shift',
+        },
+        {
+          code: 'Backslash', key: '\\', keyShift: '|',
+        },
+        {
+          code: 'KeyZ', key: 'z', keyShift: 'Z',
+        },
+        {
+          code: 'KeyX', key: 'x', keyShift: 'X',
+        },
+        {
+          code: 'KeyC', key: 'c', keyShift: 'C',
+        },
+        {
+          code: 'KeyV', key: 'v', keyShift: 'V',
+        },
+        {
+          code: 'KeyB', key: 'b', keyShift: 'B',
+        },
+        {
+          code: 'KeyN', key: 'n', keyShift: 'N',
+        },
+        {
+          code: 'KeyM', key: 'm', keyShift: 'M',
+        },
+        {
+          code: 'Comma', key: ',', keyShift: '<',
+        },
+        {
+          code: 'Period', key: '.', keyShift: '>',
+        },
+        {
+          code: 'Slash', key: '/', keyShift: '?',
+        },
+        {
+          code: 'ArrowUp', key: '▲',
+        },
+        {
+          code: 'ShiftRight', key: 'Shift',
+        },
+      ],
+      [
+        {
+          code: 'ControlLeft', key: 'Ctrl',
+        },
+        {
+          code: 'MetaLeft', key: 'Win',
+        },
+        {
+          code: 'AltLeft', key: 'Alt',
+        },
+        {
+          code: 'Space', key: ' ',
+        },
+        {
+          code: 'AltRight', key: 'Alt',
+        },
+        {
+          code: 'ControlRight', key: 'Ctrl',
+        },
+        {
+          code: 'ArrowLeft', key: '◄',
+        },
+        {
+          code: 'ArrowDown', key: '▼',
+        },
+        {
+          code: 'ArrowRight', key: '►',
         },
       ],
     ],
@@ -214,48 +214,48 @@ const getLayout = () => {
           code: 'Backquote', key: 'ё', keyShift: 'Ё',
         },
         {
-          code: 'Digit1', key: '1', keyShift: '!', keyAdditional: true, codeOfNumpad: 'Numpad1'
+          code: 'Digit1', key: '1', keyShift: '!',
         },
         {
-          code: 'Digit2', key: '2', keyShift: '"', keyAdditional: true, codeOfNumpad: 'Numpad2'
+          code: 'Digit2', key: '2', keyShift: '"',
         },
         {
-          code: 'Digit3', key: '3', keyShift: '№', keyAdditional: true, codeOfNumpad: 'Numpad3'
+          code: 'Digit3', key: '3', keyShift: '№',
         },
         {
-          code: 'Digit4', key: '4', keyShift: ';', keyAdditional: true, codeOfNumpad: 'Numpad4'
+          code: 'Digit4', key: '4', keyShift: ';',
         },
         {
-          code: 'Digit5', key: '5', keyShift: '%', keyAdditional: true, codeOfNumpad: 'Numpad5'
+          code: 'Digit5', key: '5', keyShift: '%',
         },
         {
-          code: 'Digit6', key: '6', keyShift: ':', keyAdditional: true, codeOfNumpad: 'Numpad6'
+          code: 'Digit6', key: '6', keyShift: ':',
         },
         {
-          code: 'Digit7', key: '7', keyShift: '?', keyAdditional: true, codeOfNumpad: 'Numpad7'
+          code: 'Digit7', key: '7', keyShift: '?',
         },
         {
-          code: 'Digit8', key: '8', keyShift: '*', keyAdditional: true, codeOfNumpad: 'Numpad8 NumpadMultiply'
+          code: 'Digit8', key: '8', keyShift: '*',
         },
         {
-          code: 'Digit9', key: '9', keyShift: '(', keyAdditional: true, codeOfNumpad: 'Numpad9'
+          code: 'Digit9', key: '9', keyShift: '(',
         },
         {
-          code: 'Digit0', key: '0', keyShift: ')', keyAdditional: true, codeOfNumpad: 'Numpad0'
+          code: 'Digit0', key: '0', keyShift: ')',
         },
         {
-          code: 'Minus', key: '-', keyShift: '_', keyAdditional: true, codeOfNumpad: 'NumpadSubtract'
+          code: 'Minus', key: '-', keyShift: '_',
         },
         {
-          code: 'Equal', key: '=', keyShift: '+', keyAdditional: true, codeOfNumpad: 'NumpadAdd'
+          code: 'Equal', key: '=', keyShift: '+',
         },
         {
-          code: 'Backspace', key: 'Backspace'
+          code: 'Backspace', key: 'Backspace',
         },
       ],
       [
         {
-          code: 'Tab', key: 'Tab', 
+          code: 'Tab', key: 'Tab',
         },
         {
           code: 'KeyQ', key: 'й', keyShift: 'Й',
@@ -294,15 +294,15 @@ const getLayout = () => {
           code: 'BracketRight', key: 'ъ', keyShift: 'Ъ',
         },
         {
-          code: 'Backslash', key: '\\', keyShift: '/', keyAdditional: true
+          code: 'Backslash', key: '\\', keyShift: '/',
         },
         {
-          code: 'Delete', key: 'DEL', 
+          code: 'Delete', key: 'DEL',
         },
       ],
       [
         {
-          code: 'CapsLock', key: 'CapsLock'
+          code: 'CapsLock', key: 'CapsLock',
         },
         {
           code: 'KeyA', key: 'ф', keyShift: 'Ф',
@@ -338,12 +338,12 @@ const getLayout = () => {
           code: 'Quote', key: 'э', keyShift: 'Э',
         },
         {
-          code: 'Enter', key: 'Enter', 
+          code: 'Enter', key: 'Enter',
         },
       ],
       [
         {
-          code: 'ShiftLeft', key: 'Shift'
+          code: 'ShiftLeft', key: 'Shift',
         },
         {
           code: 'Backslash', key: '\\', keyShift: '/',
@@ -376,46 +376,46 @@ const getLayout = () => {
           code: 'Period', key: 'ю', keyShift: 'Ю',
         },
         {
-          code: 'Slash', key: '/', keyShift: '?', codeOfNumpad: 'NumpadDivide'
+          code: 'Slash', key: '/', keyShift: '?',
         },
         {
-          code: 'ArrowUp', key: '▲'
+          code: 'ArrowUp', key: '▲',
         },
         {
-          code: 'ShiftRight', key: 'Shift'
+          code: 'ShiftRight', key: 'Shift',
         },
       ],
       [
         {
-          code: 'ControlLeft', key: 'Ctrl', 
+          code: 'ControlLeft', key: 'Ctrl',
         },
         {
-          code: 'MetaLeft', key: 'Win'
+          code: 'MetaLeft', key: 'Win',
         },
         {
-          code: 'AltLeft', key: 'Alt'
+          code: 'AltLeft', key: 'Alt',
         },
         {
-          code: 'Space', key: ' '
+          code: 'Space', key: ' ',
         },
         {
-          code: 'AltRight', key: 'Alt'
+          code: 'AltRight', key: 'Alt',
         },
         {
-          code: 'ControlRight', key: 'Ctrl', 
+          code: 'ControlRight', key: 'Ctrl',
         },
         {
-          code: 'ArrowLeft', key: '◄'
+          code: 'ArrowLeft', key: '◄',
         },
         {
-          code: 'ArrowDown', key: '▼'
+          code: 'ArrowDown', key: '▼',
         },
         {
-          code: 'ArrowRight', key: '►'
+          code: 'ArrowRight', key: '►',
         },
       ],
-    ]
-  }
-};
+    ],
+  };
+}
 
 module.exports = getLayout;
