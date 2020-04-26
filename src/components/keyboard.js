@@ -110,17 +110,14 @@ class Keyboard {
     });
   }
 
-  highlightShift(state, event) {
-    const caps = event && this.keysDOM.find(key => key.getAttribute('data-code') === event.target.getAttribute('data-code'));
-    if (caps && state) {
-      caps.classList.add('key--pressed-shift');
-    } else {
-      this.keysDOM.forEach(key => {
-        if (key.getAttribute('data-code') === specialKey.ShiftLeft
-            || key.getAttribute('data-code') === specialKey.ShiftRight) {
-          key.classList.remove('key--pressed-shift');
-        }
-      });
+  highlightShift(event) {
+    const targetShiftOff = event && this.keysDOM.find(key =>
+      key.getAttribute('data-code') === event.target.getAttribute('data-code')
+        && !key.classList.contains('key--pressed-shift')
+    );
+    this.keysDOM.forEach(key => key.classList.remove('key--pressed-shift'));
+    if (targetShiftOff) {
+      targetShiftOff.classList.add('key--pressed-shift');
     }
   }
 
@@ -143,15 +140,28 @@ class Keyboard {
   }
 
   onShift(event) {
-    if (this.isShift) {
+    if (event) {
+      this.isShift = this.keysDOM.find(key => key.classList.contains('key--pressed-shift') && key === event.target)
+        ? !this.isShift
+        : true;
+      this.highlightShift(event);
+      if (this.isShift) {
+        this.toShiftOnKeys();
+      } else {
+        this.toShiftOffKeys();
+      }
+      if (this.isCaps) {
+        this.toLowerCaseKeys();
+      }
+    } else if (this.isShift) {
       this.toShiftOnKeys();
-      this.highlightShift(true, event);
+      this.highlightShift(event);
       if (this.isCaps) {
         this.toLowerCaseKeys();
       }
     } else {
       this.toShiftOffKeys();
-      this.highlightShift(false, event);
+      this.highlightShift(event);
       if (this.isCaps) {
         this.toUpperCaseKeys();
       }
@@ -272,10 +282,22 @@ class Keyboard {
     }
   }
 
+  onSpecialKeyWhenShiftOn(keyCode) {
+    if (this.isShift && keyCode !== specialKey.CapsLock
+        && keyCode !== specialKey.ShiftRight && keyCode !== specialKey.ShiftLeft) {
+      const isSpecial = Object.values(specialKey).find(key => keyCode === key);
+      if (isSpecial) {
+        this.isShift = false;
+        this.onShift();
+      }
+    }
+  }
+
   handleClick(e) {
     if (!e.target.classList.contains('keyboard__key')) return;
     if (e.type === 'click') {
       const keyCode = e.target.attributes['data-code'].value;
+      this.onSpecialKeyWhenShiftOn(keyCode);
       switch (keyCode) {
         case specialKey.Del:
           this.onDelete();
@@ -298,7 +320,6 @@ class Keyboard {
           break;
         case specialKey.ShiftLeft:
         case specialKey.ShiftRight:
-          this.isShift = !this.isShift;
           this.onShift(e);
           break;
         case specialKey.ArrowLeft:
@@ -351,12 +372,19 @@ class Keyboard {
     });
   }
 
-  highlightPressedKey({ code }) {
-    const key = this.keysDOM.find(el => el.getAttribute('data-code') === code);
+  highlightPressedKey(event) {
+    const key = this.keysDOM.find(el => el.getAttribute('data-code') === event.code);
     if (key) {
       key.classList.add('key--pressed');
-      document.body.addEventListener('keyup', () => {
-        key.classList.remove('key--pressed');
+      document.body.addEventListener('keyup', ({ code }) => {
+        this.keysDOM.forEach(el => {
+          if (el.getAttribute('data-code') === code) {
+            el.classList.remove('key--pressed');
+          }
+        });
+      });
+      document.body.addEventListener('focusout', () => {
+        this.keysDOM.forEach(el => el.classList.remove('key--pressed'));
       });
     }
   }
