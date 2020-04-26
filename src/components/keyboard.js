@@ -184,7 +184,7 @@ class Keyboard {
   onEnter() {
     const { value, selectionStart } = this.textarea;
     const pre = value.slice(0, selectionStart);
-    this.textarea.value = `${pre}'\n'${value.slice(selectionStart)}`;
+    this.textarea.value = `${pre}\n${value.slice(selectionStart)}`;
     this.setCursorPosition(pre.length + 1);
   }
 
