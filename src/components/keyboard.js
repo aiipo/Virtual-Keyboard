@@ -135,7 +135,7 @@ class Keyboard {
 
   onCaps() {
     this.highlightCapsLock();
-    if (this.isCaps && !this.isShift || !this.isCaps) {
+    if ((this.isCaps && !this.isShift) || (!this.isCaps && this.isShift)) {
       this.toUpperCaseKeys();
     } else {
       this.toLowerCaseKeys();
