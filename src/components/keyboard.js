@@ -57,7 +57,6 @@ class Keyboard {
       states: this.state,
       callbacks: {
         setState: state => this.setState(state),
-        getState: state => this.getState(state),
       },
     });
     this.physicalKeys = new PhysicalKeys({
@@ -65,7 +64,6 @@ class Keyboard {
       states: this.state,
       callbacks: {
         setState: state => this.setState(state),
-        getState: state => this.getState(state),
       },
     });
     this.addListeners();
@@ -75,10 +73,6 @@ class Keyboard {
     Object.keys(state).forEach(key => {
       this.state[key] = state[key];
     });
-  }
-
-  getState(state) {
-    return this.state[state];
   }
 
   createKeyboard() {

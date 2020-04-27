@@ -7,9 +7,6 @@ class CommonKeys {
     this.setState = callbacks.setState instanceof Function
       ? state => callbacks.setState(state)
       : () => {};
-    this.getState = callbacks.getState instanceof Function
-      ? state => callbacks.getState(state)
-      : () => {};
   }
 
   toLowerCaseKeys() {
