@@ -17,4 +17,4 @@ class Key {
   }
 }
 
-export default Key;
+module.exports = Key;

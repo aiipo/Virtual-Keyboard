@@ -1,12 +1,46 @@
-import './keyboard.scss';
-import keyboardLayout from './helpers/keyboardLayout';
-import Key from './helpers/key';
-import specialKey from './helpers/specialKeys';
+const keyboardLayout = require('./helpers/keyboardLayout');
+const Key = require('./helpers/key');
+const specialKey = require('./helpers/specialKeys');
+const VirtualKeys = require('./services/virtualKeys');
+const { PhysicalKeys, runOnKeys } = require('./services/physicalKeys');
+require('./keyboard.scss');
+
+function renderKey(code) {
+  const el = document.createElement('input');
+  el.setAttribute('disabled', '');
+  el.setAttribute('data-code', code);
+  el.classList.add('keyboard__key');
+  switch (code) {
+    case specialKey.Enter:
+      el.classList.add('keyboard__key--enter');
+      break;
+    case specialKey.CapsLock:
+    case specialKey.Backspace:
+    case specialKey.ShiftLeft:
+      el.classList.add('keyboard__key--medium-wide');
+      break;
+    case specialKey.Tab:
+    case specialKey.Del:
+    case specialKey.ControlLeft:
+    case specialKey.ControlRight:
+      el.classList.add('keyboard__key--wide');
+      break;
+    case specialKey.Space:
+      el.classList.add('keyboard__key--ultra-wide');
+      break;
+    default:
+      break;
+  }
+  return el;
+}
 
 class Keyboard {
   constructor(textarea, lang) {
-    this.isCaps = false;
-    this.isShift = false;
+    this.state = {
+      isCaps: false,
+      isShift: false,
+    };
+    this.textarea = textarea || document.createElement('textarea');
 
     if (keyboardLayout()[lang]) {
       this.lang = lang;
@@ -17,15 +51,40 @@ class Keyboard {
     }
 
     this.keysDOM = [];
-    this.createKeyboard(textarea);
+    this.createKeyboard(this.textarea);
+    this.virualKeys = new VirtualKeys(this.textarea, {
+      keysDOM: this.keysDOM,
+      states: this.state,
+      callbacks: {
+        setState: state => this.setState(state),
+        getState: state => this.getState(state),
+      },
+    });
+    this.physicalKeys = new PhysicalKeys({
+      keysDOM: this.keysDOM,
+      states: this.state,
+      callbacks: {
+        setState: state => this.setState(state),
+        getState: state => this.getState(state),
+      },
+    });
     this.addListeners();
   }
 
-  createKeyboard(textarea) {
+  setState(state) {
+    Object.keys(state).forEach(key => {
+      this.state[key] = state[key];
+    });
+  }
+
+  getState(state) {
+    return this.state[state];
+  }
+
+  createKeyboard() {
     this.keyboard = document.createElement('div');
     this.keyboard.classList.add('keyboard');
 
-    this.textarea = textarea || document.createElement('textarea');
     this.textarea.classList.add('keyboard__textarea');
     this.keyboard.append(this.textarea);
     const rows = document.createElement('div');
@@ -35,7 +94,7 @@ class Keyboard {
       rowDOM.classList.add('keyboard__rows__row');
       row.forEach(el => {
         const key = new Key(el);
-        const keyDOM = this.renderKey(key.code);
+        const keyDOM = renderKey(key.code);
         this.keysDOM.push(keyDOM);
         key.fillKey(keyDOM);
         rowDOM.append(keyDOM);
@@ -46,215 +105,6 @@ class Keyboard {
 
     document.body.append(this.keyboard);
     this.textarea.focus();
-  }
-
-  renderKey(code) {
-    const el = document.createElement('input');
-    el.setAttribute('disabled', '');
-    el.setAttribute('data-code', code);
-    el.classList.add('keyboard__key');
-    switch (code) {
-      case specialKey.Enter:
-        el.classList.add('keyboard__key--enter');
-        break;
-      case specialKey.CapsLock:
-      case specialKey.Backspace:
-      case specialKey.ShiftLeft:
-        el.classList.add('keyboard__key--medium-wide');
-        break;
-      case specialKey.Tab:
-      case specialKey.Del:
-      case specialKey.ControlLeft:
-      case specialKey.ControlRight:
-        el.classList.add('keyboard__key--wide');
-        break;
-      case specialKey.Space:
-        el.classList.add('keyboard__key--ultra-wide');
-        break;
-      default:
-        break;
-    }
-    return el;
-  }
-
-  /*
-   * When key is pressed on virtual keyboard or physical.
-   * Result shows on virtual.
-  */
-
-  toLowerCaseKeys() {
-    this.keysDOM.forEach(key => {
-      const value = key.getAttribute('value');
-      if (value.length === 1) {
-        key.setAttribute('value', value.charAt(0).toLowerCase());
-      }
-    });
-  }
-
-  toUpperCaseKeys() {
-    this.keysDOM.forEach(key => {
-      const value = key.getAttribute('value');
-      if (value.length === 1) {
-        key.setAttribute('value', value.charAt(0).toUpperCase());
-      }
-    });
-  }
-
-  toShiftOnKeys() {
-    this.keysDOM.forEach(key => {
-      const value = key.getAttribute('data-shift');
-      if (value) {
-        key.setAttribute('value', value);
-      }
-    });
-  }
-
-  toShiftOffKeys() {
-    this.keysDOM.forEach(key => {
-      const value = key.getAttribute('data-unshift');
-      if (value) {
-        key.setAttribute('value', value);
-      }
-    });
-  }
-
-  highlightShift(event) {
-    const targetShiftOff = event && this.keysDOM.find(key =>
-      key.getAttribute('data-code') === event.target.getAttribute('data-code')
-        && !key.classList.contains('key--pressed-shift')
-    );
-    this.keysDOM.forEach(key => key.classList.remove('key--pressed-shift'));
-    if (targetShiftOff) {
-      targetShiftOff.classList.add('key--pressed-shift');
-    }
-  }
-
-  highlightCapsLock() {
-    const caps = this.keysDOM.find(key => key.getAttribute('data-code') === specialKey.CapsLock);
-    if (this.isCaps) {
-      caps.classList.add('key--pressed-caps');
-    } else {
-      caps.classList.remove('key--pressed-caps');
-    }
-  }
-
-  onCaps() {
-    this.highlightCapsLock();
-    if ((this.isCaps && !this.isShift) || (!this.isCaps && this.isShift)) {
-      this.toUpperCaseKeys();
-    } else {
-      this.toLowerCaseKeys();
-    }
-  }
-
-  onShift(event) {
-    if (event) {
-      this.isShift = this.keysDOM.find(key => key.classList.contains('key--pressed-shift') && key === event.target)
-        ? !this.isShift
-        : true;
-      this.highlightShift(event);
-      if (this.isShift) {
-        this.toShiftOnKeys();
-      } else {
-        this.toShiftOffKeys();
-      }
-      if (this.isCaps) {
-        this.toLowerCaseKeys();
-      }
-    } else if (this.isShift) {
-      this.toShiftOnKeys();
-      this.highlightShift(event);
-      if (this.isCaps) {
-        this.toLowerCaseKeys();
-      }
-    } else {
-      this.toShiftOffKeys();
-      this.highlightShift(event);
-      if (this.isCaps) {
-        this.toUpperCaseKeys();
-      }
-    }
-  }
-
-  /*
-    When key is pressed on virtual keyboard
-  */
-
-  setCursorPosition(position) {
-    this.textarea.selectionStart = position;
-    this.textarea.selectionEnd = position;
-    this.textarea.focus();
-  }
-
-  onDelete() {
-    const { value, selectionStart } = this.textarea;
-    this.textarea.value = value.slice(0, selectionStart) + value.slice(selectionStart + 1);
-    this.setCursorPosition(selectionStart);
-  }
-
-  onBackspace() {
-    const { value, selectionStart } = this.textarea;
-    const pos = selectionStart > 0 ? selectionStart - 1 : 0;
-    this.textarea.value = value.slice(0, pos) + value.slice(selectionStart);
-    this.setCursorPosition(pos);
-  }
-
-  onEnter() {
-    const { value, selectionStart } = this.textarea;
-    const pre = value.slice(0, selectionStart);
-    this.textarea.value = `${pre}\n${value.slice(selectionStart)}`;
-    this.setCursorPosition(pre.length + 1);
-  }
-
-  onTab() {
-    const { value, selectionStart } = this.textarea;
-    const tab = '  ';
-    this.textarea.value = value.slice(0, selectionStart) + tab + value.slice(selectionStart);
-    this.setCursorPosition(selectionStart + tab.length);
-  }
-
-  onArrowLeft() {
-    this.setCursorPosition(this.textarea.selectionStart ? this.textarea.selectionStart - 1 : 0);
-  }
-
-  onArrowRight() {
-    this.setCursorPosition(this.textarea.selectionEnd + 1);
-  }
-
-  onArrowUp() {
-    const { value, selectionStart } = this.textarea;
-    const prevLine = value.slice(0, selectionStart).lastIndexOf('\n');
-    const endPrevLine = prevLine >= 0 ? prevLine : 0;
-    const prevPrevLine = value.slice(0, endPrevLine > 0 ? endPrevLine : 0).lastIndexOf('\n');
-    const startPrevLine = prevPrevLine > 0 ? prevPrevLine + 1 : 0;
-    const content = endPrevLine > 0 ? selectionStart - endPrevLine - 1 : selectionStart;
-    const pos = startPrevLine + content < endPrevLine ? startPrevLine + content : endPrevLine;
-    this.setCursorPosition(pos);
-  }
-
-  onArrowDown() {
-    const { value, selectionStart } = this.textarea;
-    const prevLine = value.slice(0, selectionStart).lastIndexOf('\n');
-    const prevLineEnd = prevLine >= 0 ? prevLine : 0;
-    const beforeCursor = prevLineEnd > 0 ? selectionStart - prevLineEnd - 1 : selectionStart;
-
-    const afterCursorLine = value.slice(selectionStart).indexOf('\n');
-    const afterCursor = afterCursorLine >= 0 ? afterCursorLine : -1;
-
-    let pos = 0;
-    const posOnNextLine = selectionStart + afterCursor + beforeCursor + 1;
-    if (afterCursorLine >= 0) {
-      const next = value.slice(afterCursor + selectionStart + 1).indexOf('\n');
-      const nextLineEnd = next >= 0
-        ? next + selectionStart + afterCursor + 1
-        : value.slice(selectionStart).length + selectionStart;
-      pos = posOnNextLine < nextLineEnd ? posOnNextLine : nextLineEnd;
-    } else {
-      pos = posOnNextLine < value.slice(selectionStart).length
-        ? posOnNextLine
-        : value.slice(selectionStart).length + selectionStart;
-    }
-    this.setCursorPosition(pos);
   }
 
   changeLanguage() {
@@ -272,150 +122,84 @@ class Keyboard {
     });
   }
 
-  onAlt() {
-    this.setCursorPosition(this.textarea.selectionStart);
-  }
-
-  onCtrl() {
-    this.setCursorPosition(this.textarea.selectionStart);
-  }
-
-  printClicked(e) {
-    const { value, selectionStart } = this.textarea;
-    const key = this.keysDOM.find(el => el === e.target);
-    if (key) {
-      this.textarea.value = value.slice(0, selectionStart) + key.getAttribute('value') + value.slice(selectionStart);
-      this.textarea.focus();
-      this.setCursorPosition(selectionStart + 1);
-    }
-  }
-
-  onSpecialKeyWhenShiftOn(keyCode) {
-    if (this.isShift && keyCode !== specialKey.CapsLock
-        && keyCode !== specialKey.ShiftRight && keyCode !== specialKey.ShiftLeft) {
-      const isSpecial = Object.values(specialKey).find(key => keyCode === key);
-      if (isSpecial) {
-        this.isShift = false;
-        this.onShift();
-      }
-    }
-  }
-
   handleClick(e) {
     if (!e.target.classList.contains('keyboard__key')) return;
     if (e.type === 'click') {
       const keyCode = e.target.attributes['data-code'].value;
-      this.onSpecialKeyWhenShiftOn(keyCode);
+      this.virualKeys.onSpecialKeyWhenShiftOn(keyCode);
       switch (keyCode) {
         case specialKey.Del:
-          this.onDelete();
+          this.virualKeys.onDelete();
           break;
         case specialKey.Backspace:
-          this.onBackspace();
+          this.virualKeys.onBackspace();
           break;
         case specialKey.Enter:
-          this.onEnter();
+          this.virualKeys.onEnter();
           break;
         case specialKey.CapsLock:
-          this.isCaps = !this.isCaps;
-          this.onCaps();
+          this.setState({ isCaps: !this.state.isCaps });
+          this.virualKeys.onCaps();
           break;
         case specialKey.MetaLeft:
           this.changeLanguage();
           break;
         case specialKey.Tab:
-          this.onTab();
+          this.virualKeys.onTab();
           break;
         case specialKey.ShiftLeft:
         case specialKey.ShiftRight:
-          this.onShift(e);
+          this.virualKeys.onShift(e);
           break;
         case specialKey.ArrowLeft:
-          this.onArrowLeft();
+          this.virualKeys.onArrowLeft();
           break;
         case specialKey.ArrowRight:
-          this.onArrowRight();
+          this.virualKeys.onArrowRight();
           break;
         case specialKey.ArrowUp:
-          this.onArrowUp();
+          this.virualKeys.onArrowUp();
           break;
         case specialKey.ArrowDown:
-          this.onArrowDown();
+          this.virualKeys.onArrowDown();
           break;
         case specialKey.AltLeft:
         case specialKey.AltRight:
-          this.onAlt();
+          this.virualKeys.onAlt();
           break;
         case specialKey.ControlLeft:
         case specialKey.ControlRight:
-          this.onCtrl();
+          this.virualKeys.onCtrl();
           break;
         default:
-          this.printClicked(e);
-          if (this.isShift) {
-            this.isShift = false;
-            this.onShift();
+          this.virualKeys.printClicked(e);
+          if (this.state.isShift) {
+            this.setState({ isShift: false });
+            this.virualKeys.onShift();
           }
       }
     }
   }
 
-  /*
-    When key is pressed on device
-  */
-
-  runOnKeys(func, ...codes) {
-    const pressed = new Set();
-    document.addEventListener('keydown', e => {
-      pressed.add(e.code);
-      codes.forEach(code => {
-        if (pressed.has(code[0]) && pressed.has(code[1])) {
-          pressed.clear();
-          func();
-        }
-      });
-    });
-    document.addEventListener('keyup', e => {
-      pressed.delete(e.code);
-    });
-  }
-
-  highlightPressedKey(event) {
-    const key = this.keysDOM.find(el => el.getAttribute('data-code') === event.code);
-    if (key) {
-      key.classList.add('key--pressed');
-      document.body.addEventListener('keyup', ({ code }) => {
-        this.keysDOM.forEach(el => {
-          if (el.getAttribute('data-code') === code) {
-            el.classList.remove('key--pressed');
-          }
-        });
-      });
-      document.body.addEventListener('focusout', () => {
-        this.keysDOM.forEach(el => el.classList.remove('key--pressed'));
-      });
-    }
-  }
-
   handleKeydown(e) {
-    this.highlightPressedKey(e);
+    this.physicalKeys.highlightPressedKey(e);
     switch (e.code) {
       case specialKey.CapsLock:
-        this.isCaps = e.getModifierState('CapsLock');
-        this.onCaps();
+        this.setState({ isCaps: e.getModifierState('CapsLock') });
+        this.physicalKeys.onCaps();
         break;
       case specialKey.ShiftLeft:
       case specialKey.ShiftRight:
-        this.isShift = true;
-        this.onShift();
+        this.setState({ isShift: true });
+        this.physicalKeys.onShift();
         break;
       default:
         break;
     }
     document.addEventListener('keyup', ({ code }) => {
       if (code === specialKey.ShiftLeft || code === specialKey.ShiftRight) {
-        this.isShift = false;
-        this.onShift();
+        this.setState({ isShift: false });
+        this.physicalKeys.onShift();
       }
     });
   }
@@ -423,7 +207,7 @@ class Keyboard {
   addListeners() {
     this.keyboard.addEventListener('click', this.handleClick.bind(this));
     document.body.addEventListener('keydown', this.handleKeydown.bind(this));
-    this.runOnKeys(
+    runOnKeys(
       this.changeLanguage.bind(this),
       [specialKey.ShiftLeft, specialKey.ControlLeft],
       [specialKey.ShiftRight, specialKey.ControlRight],
@@ -431,4 +215,4 @@ class Keyboard {
   }
 }
 
-export default Keyboard;
+module.exports = Keyboard;

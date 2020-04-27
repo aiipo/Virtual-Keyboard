@@ -1,3 +1,3 @@
-import Keyboard from './components/keyboard';
+const Keyboard = require('./components/keyboard');
 
 new Keyboard();

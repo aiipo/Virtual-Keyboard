@@ -18,4 +18,4 @@ const keyCode = {
   Space: 'Space',
 };
 
-export default keyCode;
+module.exports = keyCode;
