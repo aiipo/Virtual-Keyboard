@@ -5,12 +5,6 @@ import specialKey from './helpers/specialKeys';
 
 class Keyboard {
   constructor(textarea, lang) {
-    this.keyboard = document.createElement('div');
-    this.keyboard.classList.add('keyboard');
-
-    this.textarea = textarea || document.createElement('textarea');
-    this.textarea.classList.add('keyboard__textarea');
-    this.keyboard.append(this.textarea);
     this.isCaps = false;
     this.isShift = false;
 
@@ -23,8 +17,22 @@ class Keyboard {
     }
 
     this.keysDOM = [];
+    this.createKeyboard(textarea);
+    this.addListeners();
+  }
+
+  createKeyboard(textarea) {
+    this.keyboard = document.createElement('div');
+    this.keyboard.classList.add('keyboard');
+
+    this.textarea = textarea || document.createElement('textarea');
+    this.textarea.classList.add('keyboard__textarea');
+    this.keyboard.append(this.textarea);
+    const rows = document.createElement('div');
+    rows.classList.add('keyboard__rows');
     keyboardLayout()[this.lang].forEach(row => {
       const rowDOM = document.createElement('div');
+      rowDOM.classList.add('keyboard__rows__row');
       row.forEach(el => {
         const key = new Key(el);
         const keyDOM = this.renderKey(key.code);
@@ -32,12 +40,12 @@ class Keyboard {
         key.fillKey(keyDOM);
         rowDOM.append(keyDOM);
       });
-      this.keyboard.append(rowDOM);
+      rows.append(rowDOM);
     });
+    this.keyboard.append(rows);
 
     document.body.append(this.keyboard);
     this.textarea.focus();
-    this.addListeners();
   }
 
   renderKey(code) {

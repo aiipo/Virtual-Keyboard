@@ -1,3 +1,9 @@
+$tablet-width: 1020px;
+
+@mixin media-tablet {
+    @media (max-width: $tablet-width) { @content; }
+}
+
 body {
     background-color: #373737;
 }
@@ -11,28 +17,52 @@ body {
     width: 100%;
     padding: 10px 0;
     background: #0000007a;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
+}
+.keyboard__textarea,
+.keyboard__rows {
+    max-width: 1100px;
+}
+
+.keyboard__rows__row {
+    display: flex;
 }
 
 .keyboard__textarea {
-    width: 75%;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 10px;
     height: 100px;
     color: #dbd5d5;
     font-size: 2.2rem;
 }
 
 .keyboard__key {
-    margin: 8px;
-    height: 55px;
-    width: 55px;
+    margin: 5px;
+    padding: 0 3px;
+    height: 4vw;
+    min-height: 25px;
+    max-height: 55px;
+    width: 100%;
+    min-width: 30px;
+    max-width: 55px;
     text-align: center;
     border-radius: 5px;
-    background: #5f737894;
+    border-width: 2px;
+    background: #3d626b94;
     color: #ffffff;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     -webkit-transition: all .2s cubic-bezier(0, 1.43, .82, .74);
     transition: all .2s cubic-bezier(0, 1.43, .82, .74);
+
+    @include media-tablet {
+        margin: 3px;
+        border-width: 1px;
+    }
 }
 
 .keyboard__key:hover {
@@ -44,21 +74,32 @@ body {
 }
 
 .keyboard__key--wide {
-    width: 55px;
+    &:not([data-code^="Control"]) {
+        max-width: 100%;
+    }
 }
 
 .keyboard__key--enter {
-    width: 110px;
+    min-width: 78px;
+    max-width: 135px;
 }
 
 .keyboard__key--medium-wide {
-    width: 8%;
-    max-width: 350px;
+    max-width: 100%;
+
+    &[value="Backspace"] {
+        min-width: 70px;
+    }
+
+    &[value="CapsLock"],
+    &[value="Shift"] {
+        min-width: 63px;
+    }
 }
 
 .keyboard__key--ultra-wide {
-    width: 33.5%;
-    max-width: 500px;
+    min-width: 285px;
+    max-width: 100%;
 }
 
 .key--pressed {
