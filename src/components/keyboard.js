@@ -44,7 +44,7 @@ class Keyboard {
 
     if (keyboardLayout()[lang]) {
       this.lang = lang;
-    } else if (keyboardLayout[localStorage.getItem('lang')]) {
+    } else if (keyboardLayout()[localStorage.getItem('lang')]) {
       this.lang = localStorage.getItem('lang');
     } else {
       this.lang = 'en';
@@ -112,6 +112,7 @@ class Keyboard {
     const currentIndex = languages.indexOf(this.lang);
     const nextIndex = (currentIndex + 1) % languages.length;
     this.lang = languages[nextIndex];
+    localStorage.setItem('lang', this.lang);
     let index = 0;
     keyboardLayout()[this.lang].forEach(row => {
       row.forEach(el => {
