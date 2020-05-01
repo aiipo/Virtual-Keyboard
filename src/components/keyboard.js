@@ -34,6 +34,10 @@ function renderKey(code) {
   return el;
 }
 
+const eventTypes = {
+  CLICK: 'click',
+};
+
 class Keyboard {
   constructor(textarea, lang) {
     this.state = {
@@ -82,10 +86,10 @@ class Keyboard {
     this.textarea.classList.add('keyboard__textarea');
     this.keyboard.append(this.textarea);
     const rows = document.createElement('div');
-    rows.classList.add('keyboard__rows');
+    rows.classList.add('keyboard__rows', 'rows-container');
     keyboardLayout()[this.lang].forEach(row => {
       const rowDOM = document.createElement('div');
-      rowDOM.classList.add('keyboard__rows__row');
+      rowDOM.classList.add('rows-container__row');
       row.forEach(el => {
         const key = new Key(el);
         const keyDOM = renderKey(key.code);
@@ -118,8 +122,10 @@ class Keyboard {
   }
 
   handleClick(e) {
-    if (!e.target.classList.contains('keyboard__key')) return;
-    if (e.type === 'click') {
+    if (!e.target.classList.contains('keyboard__key')) {
+      return;
+    }
+    if (e.type === eventTypes.CLICK) {
       const keyCode = e.target.attributes['data-code'].value;
       this.virualKeys.onSpecialKeyWhenShiftOn(keyCode);
       switch (keyCode) {

@@ -13,7 +13,7 @@ class CommonKeys {
     this.keysDOM.forEach(key => {
       const value = key.getAttribute('value');
       if (value.length === 1) {
-        key.setAttribute('value', value.charAt(0).toLowerCase());
+        key.setAttribute('value', value.toLowerCase());
       }
     });
   }
@@ -22,7 +22,7 @@ class CommonKeys {
     this.keysDOM.forEach(key => {
       const value = key.getAttribute('value');
       if (value.length === 1) {
-        key.setAttribute('value', value.charAt(0).toUpperCase());
+        key.setAttribute('value', value.toUpperCase());
       }
     });
   }
