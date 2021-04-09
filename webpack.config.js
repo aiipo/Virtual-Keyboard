@@ -10,38 +10,25 @@ module.exports = (env, options) => {
         mode: isProduction ? 'production' : 'development',
         devtool: isProduction ? 'none' : 'source-map',
         watch: !isProduction,
-        entry: ['./src/index.js', './src/assets/sass/style.scss'],
+        entry: './src/index.js',
         output: {
             path: path.resolve(__dirname, 'dist'),
             publicPath: '/',
             filename: 'script.js',
         },
-
+        devServer: {
+            port: 4000,
+            hot: !isProduction,
+        },
         module : {
             rules: [
                 {
-                    test: /\.js$/,
-                    exclude: /node_modules/,
-                    use: {
-                        loader: 'babel-loader',
-                        options: {
-                            plugins: ["@babel/plugin-proposal-class-properties"],
-                            presets: ['@babel/preset-env']
-                        }
-                    }
-                }, {
                     test: /\.scss$/,
                     use: [
                         MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'
                     ]
-                }, {
-                    test: /\.(png|svg|jpe?g|gif)$/i,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                        },
-                    ],
-                }, {
+                },
+                {
                     test: /\.html$/i,
                     loader: 'html-loader',
                 },
